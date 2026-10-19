@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FaithRank – Reset Password</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #1C2B3A;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #fff;
+      text-align: center;
+    }
+    .card {
+      padding: 2rem;
+      max-width: 360px;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: 0.5rem; color: #C8973A; }
+    p  { color: #aaa; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>FaithRank</h1>
+    <p id="msg">Opening the app to reset your password…</p>
+  </div>
+
+  <script>
+    (function () {
+      // Supabase puts tokens in the URL fragment: #access_token=...&refresh_token=...&type=recovery
+      var hash = window.location.hash.substring(1); // strip leading '#'
+      var params = new URLSearchParams(hash);
+
+      var accessToken  = params.get('access_token');
+      var refreshToken = params.get('refresh_token');
+      var type         = params.get('type');
+
+      if (accessToken && type === 'recovery') {
+        // Build the deep-link with tokens as QUERY params (not fragment)
+        // so the React Native Linking API can read them.
+        var deepLink =
+          'faithrank://reset-password' +
+          '?access_token='  + encodeURIComponent(accessToken) +
+          '&refresh_token=' + encodeURIComponent(refreshToken || '');
+
+        window.location.href = deepLink;
+
+        // Fallback message if the app doesn't open within 2 s
+        setTimeout(function () {
+          document.getElementById('msg').textContent =
+            'If the app didn\'t open, make sure FaithRank is installed and try again.';
+        }, 2000);
+      } else {
+        document.getElementById('msg').textContent =
+          'Invalid or expired reset link. Please request a new one from the app.';
+      }
+    })();
+  </script>
+</body>
+</html>
