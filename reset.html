@@ -32,8 +32,7 @@
 
   <script>
     (function () {
-      // Supabase puts tokens in the URL fragment: #access_token=...&refresh_token=...&type=recovery
-      var hash = window.location.hash.substring(1); // strip leading '#'
+      var hash = window.location.hash.substring(1);
       var params = new URLSearchParams(hash);
 
       var accessToken  = params.get('access_token');
@@ -41,16 +40,14 @@
       var type         = params.get('type');
 
       if (accessToken && type === 'recovery') {
-        // Build the deep-link with tokens as QUERY params (not fragment)
-        // so the React Native Linking API can read them.
         var deepLink =
           'faithrank://reset-password' +
-          '?access_token='  + encodeURIComponent(accessToken) +
+          '?token_hash='   + encodeURIComponent(accessToken) +
+          '&access_token=' + encodeURIComponent(accessToken) +
           '&refresh_token=' + encodeURIComponent(refreshToken || '');
 
         window.location.href = deepLink;
 
-        // Fallback message if the app doesn't open within 2 s
         setTimeout(function () {
           document.getElementById('msg').textContent =
             'If the app didn\'t open, make sure FaithRank is installed and try again.';
